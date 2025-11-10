@@ -4,8 +4,6 @@ import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import type { User } from 'firebase/auth';
-import { useUser } from '@/firebase';
 import {
   SidebarProvider,
   Sidebar,
@@ -17,74 +15,17 @@ import {
   SidebarInset,
 } from '@/components/ui/sidebar';
 import { Logo } from '@/components/logo';
-import { LayoutDashboard, BookCopy, BarChart2, UserCircle, LogOut } from 'lucide-react';
-import { logOutAction } from '@/app/auth/actions';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
+import { LayoutDashboard, BookCopy, BarChart2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const navItems = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { href: '/exams', icon: BookCopy, label: 'Exams' },
   { href: '/performance', icon: BarChart2, label: 'Performance' },
-  { href: '/profile', icon: UserCircle, label: 'Profile' },
 ];
-
-function UserNav({ user }: { user: User | null }) {
-  if (!user) {
-    return (
-      <div className="flex items-center space-x-4">
-        <Skeleton className="h-10 w-10 rounded-full" />
-        <div className="space-y-2">
-          <Skeleton className="h-4 w-[100px]" />
-        </div>
-      </div>
-    );
-  }
-  
-  const getInitials = (name: string | null) => {
-    if (!name) return 'U';
-    return name.split(' ').map(n => n[0]).join('').toUpperCase();
-  }
-
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-          <Avatar className="h-10 w-10">
-            <AvatarImage src={user.photoURL || ''} alt={user.displayName || 'User'} />
-            <AvatarFallback>{getInitials(user.displayName)}</AvatarFallback>
-          </Avatar>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align="end" forceMount>
-        <DropdownMenuLabel className="font-normal">
-          <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{user.displayName}</p>
-            <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
-          </div>
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onSelect={() => logOutAction()}>
-          <LogOut className="mr-2 h-4 w-4" />
-          <span>Log out</span>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-}
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { user, isUserLoading } = useUser();
 
   return (
     <SidebarProvider>
@@ -114,9 +55,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </Sidebar>
         <SidebarInset className="flex flex-col">
           <header className="sticky top-0 z-10 flex h-16 items-center justify-end border-b bg-background px-4 md:px-6">
-            <UserNav user={user} />
+            {/* UserNav removed */}
           </header>
-          <main className="flex-1 p-4 md:p-6 lg:p-8">{isUserLoading ? <Skeleton className="h-full w-full" /> : children}</main>
+          <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
         </SidebarInset>
       </div>
     </SidebarProvider>
