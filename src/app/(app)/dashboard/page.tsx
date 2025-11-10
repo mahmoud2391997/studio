@@ -7,12 +7,9 @@ import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 import { ArrowUpRight, BookOpen, CheckCircle, Target } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { useFirebase } from '@/firebase';
 
 // Mock data, to be replaced with data from Firestore
-const user = {
-  name: 'Alex Doe',
-};
-
 const stats = [
   { title: 'Exams Taken', value: '12', icon: BookOpen, change: '+2 this week' },
   { title: 'Average Score', value: '78%', icon: Target, change: '+5% this week' },
@@ -43,10 +40,12 @@ const chartConfig = {
 };
 
 export default function DashboardPage() {
+  const { user } = useFirebase();
+
   return (
     <div className="flex flex-col gap-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Welcome back, {user.name}!</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Welcome back, {user?.displayName || 'Trainee'}!</h1>
         <p className="text-muted-foreground">Here's a summary of your progress. Keep up the great work!</p>
       </div>
 
