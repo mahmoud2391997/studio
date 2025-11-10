@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckCircle, BookOpen, BarChart, BrainCircuit } from 'lucide-react';
+import { BrainCircuit, BookOpen, BarChart } from 'lucide-react';
 import { Logo } from '@/components/logo';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
@@ -37,8 +37,11 @@ export default function Home() {
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <Logo />
           <nav className="flex items-center gap-4">
+            <Button asChild variant="ghost">
+                <Link href="/auth/login">Log In</Link>
+            </Button>
             <Button asChild>
-              <Link href="/dashboard">Go to App</Link>
+              <Link href="/auth/signup">Sign Up</Link>
             </Button>
           </nav>
         </div>
@@ -55,7 +58,7 @@ export default function Home() {
             </p>
             <div className="mt-8 flex justify-center gap-4">
               <Button asChild size="lg">
-                <Link href="/dashboard">Get Started for Free</Link>
+                <Link href="/auth/signup">Get Started for Free</Link>
               </Button>
               <Button asChild size="lg" variant="outline">
                 <Link href="#features">Learn More</Link>
@@ -119,7 +122,7 @@ export default function Home() {
             </p>
             <div className="mt-8">
               <Button asChild size="lg">
-                <Link href="/dashboard">Start Your Free Trial Today</Link>
+                <Link href="/auth/signup">Start Your Free Trial Today</Link>
               </Button>
             </div>
           </div>
