@@ -1,0 +1,128 @@
+/**
+ * @fileOverview Firestore Security Rules for BarExamAI application.
+ *
+ * Core Philosophy:
+ * This ruleset enforces a strict user-ownership model for user profiles and exam session data.
+ * All questions are readable by any authenticated user. Administrative privileges are granted based on the existence of a user document within a dedicated admin roles collection.
+ *
+ * Data Structure:
+ * - /users/{userId}: Stores individual user profiles. Only the authenticated user can access their own profile.
+ * - /users/{userId}/examSessions/{examSessionId}: Stores exam session data for each user. Only the authenticated user can access their own exam sessions.
+ * - /questions/{questionId}: Stores exam questions. All authenticated users can read questions.
+ * - /roles_admin/{userId}: Presence indicates a user has admin privileges.
+ *
+ * Key Security Decisions:
+ * - User data and exam session data are strictly private and accessible only to the owning user.
+ * - Questions are publicly readable by authenticated users.
+ * - Administrative privileges are granted based on document existence in the /roles_admin collection. No user listing is allowed for this collection.
+ * - No schema validation is performed in this prototyping phase, except for authorization-critical fields like userId during creation.
+ *
+ * Denormalization for Authorization:
+ * - The userId is encoded in the path for /users/{userId} and /users/{userId}/examSessions/{examSessionId}, enabling path-based authorization.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Controls access to user profile data.
+     * @path /users/{userId}
+     * @allow (read, write) User 'user123' can access their own profile.
+     * @deny (read, write) User 'user456' cannot access User 'user123' profile.
+     * @principle Enforces document ownership for user profiles.
+     */
+    match /users/{userId} {
+      // isOwner function checks if the request is made by the user matching the userId
+      function isOwner(userId) {
+        return request.auth != null && request.auth.uid == userId;
+      }
+
+      // isExistingOwner function checks if the user is the owner and the resource exists
+      function isExistingOwner(userId) {
+          return isOwner(userId) && resource != null;
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if false; // User listing is not permitted
+
+      // Allows creating a user document if the authenticated user's ID matches the document ID
+      allow create: if isOwner(userId) && request.resource.data.id == userId;
+      // Data consistency is enforced during updates, ensuring the user ID cannot be changed
+      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Controls access to exam session data for a specific user.
+     * @path /users/{userId}/examSessions/{examSessionId}
+     * @allow (read, write) User 'user123' can access their own exam session 'session456'.
+     * @deny (read, write) User 'user456' cannot access User 'user123' exam session 'session456'.
+     * @principle Enforces document ownership for exam sessions.
+     */
+    match /users/{userId}/examSessions/{examSessionId} {
+      // isOwner function checks if the request is made by the user matching the userId
+      function isOwner(userId) {
+        return request.auth != null && request.auth.uid == userId;
+      }
+
+      // isExistingOwner function checks if the user is the owner and the resource exists
+      function isExistingOwner(userId) {
+          return isOwner(userId) && resource != null;
+      }
+
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+
+      // Allows creating an exam session if the authenticated user's ID matches the userId
+      allow create: if isOwner(userId) && request.resource.data.userId == userId;
+      // Data consistency is enforced during updates, ensuring the user ID cannot be changed
+      allow update: if isExistingOwner(userId) && request.resource.data.userId == resource.data.userId;
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Controls access to exam questions.
+     * @path /questions/{questionId}
+     * @allow (read) Any authenticated user can read questions.
+     * @deny (write) Only admins can modify questions (TODO: Implement admin role check).
+     * @principle Grants public read access to questions while restricting write access.
+     */
+    match /questions/{questionId} {
+      // isAdmin checks if the user is an administrator based on document existence in /roles_admin
+      function isAdmin() {
+        return exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+      }
+
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      allow get, list: if isSignedIn();
+      allow create: if isAdmin();
+      allow update: if isAdmin() && resource != null;
+      allow delete: if isAdmin() && resource != null;
+    }
+
+    /**
+     * @description Grants admin privileges based on the existence of a document in this collection.
+     * @path /roles_admin/{userId}
+     * @allow (create) Allows an admin to create a role (TODO: Implement admin role check for creation).
+     * @allow (get) Allows an admin to check if a user has a role (TODO: Implement admin role check for getting).
+     * @deny (list) Prevents listing of admin roles.
+     * @deny (update, delete) Restricts modification and deletion of admin roles.
+     * @principle Uses document existence to grant admin privileges.
+     */
+    match /roles_admin/{userId} {
+      // isAdmin checks if the user is an administrator based on document existence in /roles_admin
+      function isAdmin() {
+        return exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+      }
+
+      allow get: if isAdmin();
+      allow list: if false;
+      allow create: if isAdmin();
+      allow update: if false;
+      allow delete: if false;
+    }
+  }
+}
