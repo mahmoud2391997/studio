@@ -6,14 +6,14 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc } from 'firebase/firestore';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { useAuth, useFirestore } from '@/firebase';
+import { useAuth, useFirestore, setDocumentNonBlocking } from '@/firebase';
 import { signUpAction } from '../actions';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
@@ -49,13 +49,15 @@ export default function SignUpPage() {
       
       await updateProfile(user, { displayName: values.name });
       
-      // Create user document in Firestore
-      await setDoc(doc(db, 'users', user.uid), {
-        uid: user.uid,
-        displayName: values.name,
+      // Create user document in Firestore using the non-blocking helper
+      const userDocRef = doc(db, 'users', user.uid);
+      const userData = {
+        id: user.uid,
         email: values.email,
-        createdAt: new Date(),
-      });
+        profileName: values.name,
+        registrationDate: new Date().toISOString(),
+      };
+      setDocumentNonBlocking(userDocRef, userData, {});
 
       const idToken = await user.getIdToken();
       await signUpAction(idToken);
