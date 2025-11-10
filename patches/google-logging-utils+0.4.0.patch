@@ -1,0 +1,31 @@
+diff --git a/node_modules/google-logging-utils/build/src/logging-utils.js b/node_modules/google-logging-utils/build/src/logging-utils.js
+index 929553f..f84b0f9 100644
+--- a/node_modules/google-logging-utils/build/src/logging-utils.js
++++ b/node_modules/google-logging-utils/build/src/logging-utils.js
+@@ -34,10 +34,7 @@ const DUPLICATE_TRACE_CONTEXT_WARNING = 'Set `Trace-Context` header has been set
+  */
+ function isCloudRun() {
+     // K_SERVICE is a documented env var for Cloud Run: https://cloud.google.com/run/docs/reference/container-contract#env-vars
+-    const majorNodeVersion = parseInt(process.version.substring(1).split('.')[0], 10);
+-    // require('node:process') is used to decide whether the code is running in edge environment
+-    // see: https://github.com/GoogleCloudPlatform/google-cloud-node/issues/2996
+-    return 'K_SERVICE' in process.env && majorNodeVersion >= 18;
++    return 'K_SERVICE' in process.env;
+ }
+ exports.isCloudRun = isCloudRun;
+ /**
+diff --git a/node_modules/google-logging-utils/build/src/index.js b/node_modules/google-logging-utils/build/src/index.js
+index 28c8959..a2d67e7 100644
+--- a/node_modules/google-logging-utils/build/src/index.js
++++ b/node_modules/google-logging-utils/build/src/index.js
+@@ -51,9 +51,7 @@ Object.defineProperty(exports, "LOGGING_TRACE_KEY", { enumerable: true, get: fu
+ function createHttpRequest(req, res) {
+     var _a, _b;
+     const isCloudRun = (0, logging_utils_1.isCloudRun)();
+-    const majorNodeVersion = parseInt(process.version.substring(1).split('.')[0], 10);
+-    const processInEdge = majorNodeVersion >= 18;
+-    const host = (processInEdge && isCloudRun
++    const host = (isCloudRun
+         ? ''
+         : ((_a = req.headers) === null || _a === void 0 ? void 0 : _a.host) || '');
+     const url = new url_1.URL(req.originalUrl || req.url, `http://${host}`);

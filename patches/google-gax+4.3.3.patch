@@ -1,0 +1,22 @@
+diff --git a/node_modules/google-gax/build/src/fallback.js b/node_modules/google-gax/build/src/fallback.js
+index 72df536..c0fb6e5 100644
+--- a/node_modules/google-gax/build/src/fallback.js
++++ b/node_modules/google-gax/build/src/fallback.js
+@@ -28,7 +28,15 @@
+ // gRPC-fallback version is a constant string, see package.json
+ exports.fallback = true;
+ const version = require('../package.json').version;
+-const process = require('node:process');
++
++let process;
++try {
++  // This fails in some environments (like Next.js middleware), but that's okay because we only need it for metadata.
++  process = require('node:process');
++} catch (e) {
++  process = {
++  };
++}
++
+ const gaxMiddleware = require('./gax-middleware');
+ const protobuf = require('protobufjs');
+ const CLIENT_VERSION_HEADER = 'x-goog-api-client';
