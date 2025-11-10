@@ -1,3 +1,34 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "hero-1",
+      "description": "A modern library with students studying.",
+      "imageUrl": "https://images.unsplash.com/photo-1562529163-2cded489cc9a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxsaWJyYXJ5JTIwbGF3fGVufDB8fHx8MTc2Mjc2MTA3NHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "library law"
+    },
+    {
+      "id": "feature-1",
+      "description": "Abstract representation of AI neural networks.",
+      "imageUrl": "https://images.unsplash.com/photo-1591696331111-ef9586a5b17a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxhcnRpZmljaWFsJTIwaW50ZWxsaWdlbmNlfGVufDB8fHx8MTc2MjY4MjExMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "artificial intelligence"
+    },
+    {
+      "id": "feature-2",
+      "description": "A focused person writing at a desk.",
+      "imageUrl": "https://images.unsplash.com/photo-1669146894279-509f5de45390?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxzdHVkZW50JTIwc3R1ZHlpbmd8ZW58MHx8fHwxNzYyNjgzOTA3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "student studying"
+    },
+    {
+      "id": "feature-3",
+      "description": "A dashboard with charts and graphs.",
+      "imageUrl": "https://images.unsplash.com/photo-1523961131990-5ea7c61b2107?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxkYXRhJTIwYW5hbHl0aWNzfGVufDB8fHx8MTc2Mjc1MTk1OXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "data analytics"
+    },
+    {
+      "id": "avatar-1",
+      "description": "A placeholder for a user avatar.",
+      "imageUrl": "https://images.unsplash.com/photo-1590086782792-42dd2350140d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjI3MTQ3MjJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person portrait"
+    }
+  ]
 }
