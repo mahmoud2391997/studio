@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { getAuth, onAuthStateChanged, User, updateProfile } from 'firebase/auth';
-import { app } from '@/lib/firebase';
+import { updateProfile } from 'firebase/auth';
+import { useUser, useAuth } from '@/firebase';
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,37 +11,29 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { logOutAction } from '@/app/auth/actions';
 
-const auth = getAuth(app);
-
 export default function ProfilePage() {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { user, isUserLoading } = useUser();
+  const auth = useAuth();
   const [name, setName] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      if (currentUser) {
-        setName(currentUser.displayName || '');
-      }
-      setLoading(false);
-    });
-    return () => unsubscribe();
-  }, []);
+    if (user) {
+      setName(user.displayName || '');
+    }
+  }, [user]);
   
   const handleNameChange = async () => {
-    if (!user || !name.trim()) return;
+    if (!auth.currentUser || !name.trim()) return;
 
     try {
-      await updateProfile(user, { displayName: name.trim() });
+      await updateProfile(auth.currentUser, { displayName: name.trim() });
       toast({
         title: 'Success',
         description: 'Your name has been updated.',
       });
-      // Re-fetch user or update state to reflect change
-      setUser({ ...user, displayName: name.trim() } as User);
+      // The useUser hook will update the user state automatically
       setIsEditing(false);
     } catch (error) {
       toast({
@@ -52,7 +44,7 @@ export default function ProfilePage() {
     }
   };
 
-  if (loading) {
+  if (isUserLoading) {
     return <ProfileSkeleton />;
   }
 
@@ -100,8 +92,7 @@ export default function ProfilePage() {
             ) : (
                <div className="flex items-center gap-2">
                 <Input id="name" value={user.displayName || ''} readOnly disabled />
-                <Button variant="outline" onClick={() => setIsEditing(true)}>Edit</Button>
-              </div>
+                <Button variant="outline" onClick={() => setIsEditing(true)}>Edit</Button>              </div>
             )}
           </div>
         </CardContent>

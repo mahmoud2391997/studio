@@ -4,8 +4,8 @@ import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
-import { app } from '@/lib/firebase';
+import type { User } from 'firebase/auth';
+import { useUser } from '@/firebase';
 import {
   SidebarProvider,
   Sidebar,
@@ -30,8 +30,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-
-const auth = getAuth(app);
 
 const navItems = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -86,16 +84,7 @@ function UserNav({ user }: { user: User | null }) {
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const [user, setUser] = React.useState<User | null>(null);
-  const [loading, setLoading] = React.useState(true);
-
-  React.useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setLoading(false);
-    });
-    return () => unsubscribe();
-  }, []);
+  const { user, isUserLoading } = useUser();
 
   return (
     <SidebarProvider>
@@ -127,7 +116,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <header className="sticky top-0 z-10 flex h-16 items-center justify-end border-b bg-background px-4 md:px-6">
             <UserNav user={user} />
           </header>
-          <main className="flex-1 p-4 md:p-6 lg:p-8">{loading ? <Skeleton className="h-full w-full" /> : children}</main>
+          <main className="flex-1 p-4 md:p-6 lg:p-8">{isUserLoading ? <Skeleton className="h-full w-full" /> : children}</main>
         </SidebarInset>
       </div>
     </SidebarProvider>
