@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle, BookOpen, BarChart, BrainCircuit } from 'lucide-react';
-import { PublicHeader } from '@/components/layout/public-header';
+import { Logo } from '@/components/logo';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
@@ -33,7 +33,16 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <PublicHeader />
+       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container mx-auto flex h-16 items-center justify-between px-4">
+          <Logo />
+          <nav className="flex items-center gap-4">
+            <Button asChild>
+              <Link href="/dashboard">Go to App</Link>
+            </Button>
+          </nav>
+        </div>
+      </header>
       <main className="flex-grow">
         {/* Hero Section */}
         <section className="relative bg-background py-20 md:py-32">
@@ -46,7 +55,7 @@ export default function Home() {
             </p>
             <div className="mt-8 flex justify-center gap-4">
               <Button asChild size="lg">
-                <Link href="/auth/signup">Get Started for Free</Link>
+                <Link href="/dashboard">Get Started for Free</Link>
               </Button>
               <Button asChild size="lg" variant="outline">
                 <Link href="#features">Learn More</Link>
@@ -110,7 +119,7 @@ export default function Home() {
             </p>
             <div className="mt-8">
               <Button asChild size="lg">
-                <Link href="/auth/signup">Start Your Free Trial Today</Link>
+                <Link href="/dashboard">Start Your Free Trial Today</Link>
               </Button>
             </div>
           </div>
